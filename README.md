@@ -1,6 +1,3 @@
-# hillclimb-cv
-Hand gesture controller for Hill Climb Racing using Python, MediaPipe, and OpenCV.
-
 # 🖐️ Hill Climb Racing — Hand Gesture Controller (Python + Computer Vision)
 
 This project is a fun computer vision experiment where I control the game **Hill Climb Racing** using only my hand gestures — no keyboard input required.
