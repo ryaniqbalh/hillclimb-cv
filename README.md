@@ -51,7 +51,29 @@ This project demonstrates how computer vision can be used for **real-time intera
 
 ## 🔧 Installation
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/ryaniqbalh/HillClimbRacing-HandControl
-cd HillClimbRacing-HandControl
+## 🔧 Installation
+
+Follow the steps below to set up the Hand Gesture Controller for Hill Climb Racing:
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/ryaniqbalh/HillClimbRacing-HandControl  
+   cd HillClimbRacing-HandControl  
+
+3. Create and activate a virtual environment
+   ```bash
+   python -m venv .env  
+   .\.env\Scripts\activate   # Windows  
+
+5. Install dependencies
+   ```bash
+   pip install -r requirements.txt  
+   # Or install manually:  
+   pip install opencv-python mediapipe pyautogui numpy  
+
+7. Run the program
+   ```bash
+   python hillclimb_hand_controller.py  
+
+Make sure Hill Climb Racing is already open, then raise your hands and start playing!
+
