@@ -28,11 +28,8 @@ class DualHandHillClimbController:
 
         pyautogui.FAILSAFE = False
         pyautogui.PAUSE = 0
+
     def is_hand_open(self, hand_landmarks):
-        """
-        Menentukan apakah tangan 'terbuka' berdasarkan posisi jari.
-        Mengembalikan True jika >=4 jari lurus.
-        """
         thumb_tip = hand_landmarks.landmark[4].y
         index_tip = hand_landmarks.landmark[8].y
         middle_tip = hand_landmarks.landmark[12].y
@@ -55,12 +52,6 @@ class DualHandHillClimbController:
         return sum(fingers_extended) >= 4
 
     def detect_hands_state(self, frame):
-        """
-        Mengembalikan:
-        - frame (dengan landmark)
-        - left_open  (tangan di kiri layar)
-        - right_open (tangan di kanan layar)
-        """
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = self.hands.process(frame_rgb)
 
@@ -70,61 +61,39 @@ class DualHandHillClimbController:
         if results.multi_hand_landmarks:
             hands_info = []
 
-            # Kumpulkan informasi semua tangan
             for hand_landmarks in results.multi_hand_landmarks:
-                cx = hand_landmarks.landmark[0].x  # 0 = wrist
+                cx = hand_landmarks.landmark[0].x
                 is_open = self.is_hand_open(hand_landmarks)
                 hands_info.append((cx, is_open, hand_landmarks))
 
-            # Urutkan tangan berdasarkan posisi x (0 = paling kiri)
             hands_info.sort(key=lambda x: x[0])
 
             if len(hands_info) == 1:
                 cx, is_open, hand_landmarks = hands_info[0]
-
-                # Kalau cuma satu tangan:
-                # jika di kiri layar -> rem, kalau di kanan -> gas
                 if cx < 0.5:
                     left_open = is_open
                 else:
                     right_open = is_open
-
-                self.mp_draw.draw_landmarks(
-                    frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS
-                )
+                self.mp_draw.draw_landmarks(frame, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
 
             elif len(hands_info) >= 2:
-                # tangan paling kiri = rem
                 cx_l, is_open_l, hand_l = hands_info[0]
-                # tangan paling kanan = gas
                 cx_r, is_open_r, hand_r = hands_info[-1]
 
                 left_open = is_open_l
                 right_open = is_open_r
 
-                self.mp_draw.draw_landmarks(
-                    frame, hand_l, self.mp_hands.HAND_CONNECTIONS
-                )
-                self.mp_draw.draw_landmarks(
-                    frame, hand_r, self.mp_hands.HAND_CONNECTIONS
-                )
+                self.mp_draw.draw_landmarks(frame, hand_l, self.mp_hands.HAND_CONNECTIONS)
+                self.mp_draw.draw_landmarks(frame, hand_r, self.mp_hands.HAND_CONNECTIONS)
 
         return frame, left_open, right_open
 
     def update_keys(self, left_open, right_open):
-        """
-        Mengirim keyDown / keyUp berdasarkan perubahan state.
-        Kiri  -> KEY_BRAKE
-        Kanan -> KEY_GAS
-        """
-
-        # -------- Rem (kiri) --------
         if left_open and not self.left_prev_open:
             pyautogui.keyDown(KEY_BRAKE)
         elif not left_open and self.left_prev_open:
             pyautogui.keyUp(KEY_BRAKE)
 
-        # -------- Gas (kanan) --------
         if right_open and not self.right_prev_open:
             pyautogui.keyDown(KEY_GAS)
         elif not right_open and self.right_prev_open:
@@ -134,41 +103,34 @@ class DualHandHillClimbController:
         self.right_prev_open = right_open
 
     def run(self):
-        print("Jalankan game Hill Climb Racing, fokuskan jendela game,")
-        print("lalu jalankan script ini. Tekan 'q' di jendela kamera untuk keluar.\n")
+        print("Open Hill Climb Racing and focus the game window.")
+        print("Press 'q' to exit.\n")
 
         while True:
             ret, frame = self.cap.read()
             if not ret:
-                print("Gagal membaca kamera.")
                 break
 
             frame = cv2.flip(frame, 1)
 
             frame, left_open, right_open = self.detect_hands_state(frame)
 
-            # Update tombol keyboard
             self.update_keys(left_open, right_open)
 
-            # ===== Overlay status =====
             text_left = f"LEFT (Brake: {KEY_BRAKE.upper()}) : {'ON' if left_open else 'OFF'}"
             text_right = f"RIGHT (Gas: {KEY_GAS.upper()}) : {'ON' if right_open else 'OFF'}"
 
-            # warna tetap: kiri merah, kanan biru
-            left_color = (0, 0, 255)   # BGR -> merah
-            right_color = (255, 0, 0)  # BGR -> biru
+            left_color = (0, 0, 255)
+            right_color = (255, 0, 0)
 
-            cv2.putText(frame, text_left, (10, 30),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, left_color, 2)
-            cv2.putText(frame, text_right, (10, 60),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, right_color, 2)
+            cv2.putText(frame, text_left, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, left_color, 2)
+            cv2.putText(frame, text_right, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.7, right_color, 2)
 
             cv2.imshow("Dual Hand Controller - Hill Climb Racing", frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
 
-        # pastikan tombol dilepas saat keluar
         pyautogui.keyUp(KEY_GAS)
         pyautogui.keyUp(KEY_BRAKE)
 
