@@ -45,6 +45,9 @@ This project demonstrates how computer vision can be used for **real-time intera
 
 ## 🔧 Installation
 
+**Make sure you already install Hill Climb Racing**  
+   You can download the game directly from the **Microsoft Store** on Windows.
+   
 Follow the steps below to set up the Hand Gesture Controller for Hill Climb Racing:
 
 1. Clone the repository
@@ -64,6 +67,8 @@ Follow the steps below to set up the Hand Gesture Controller for Hill Climb Raci
    pip install opencv-python mediapipe pyautogui numpy  
 
 7. Run the program
+   Before running the script, make sure Hill Climb Racing is already open on your screen.
+   The gesture controller works by sending keyboard inputs to the active game window.
    ```bash
    python hillclimb_hand_controller.py  
 
