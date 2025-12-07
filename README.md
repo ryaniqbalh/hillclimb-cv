@@ -67,6 +67,7 @@ Follow the steps below to set up the Hand Gesture Controller for Hill Climb Raci
    pip install opencv-python mediapipe pyautogui numpy  
 
 7. Run the program
+
    Before running the script, make sure Hill Climb Racing is already open on your screen.
    The gesture controller works by sending keyboard inputs to the active game window.
    ```bash
