@@ -43,14 +43,6 @@ This project demonstrates how computer vision can be used for **real-time intera
 
 ---
 
-## 📷 Demo
-
-*(Insert GIF or screenshot here if you want — optional)*
-
----
-
-## 🔧 Installation
-
 ## 🔧 Installation
 
 Follow the steps below to set up the Hand Gesture Controller for Hill Climb Racing:
